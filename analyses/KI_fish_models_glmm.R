@@ -53,12 +53,27 @@ sr.se <- aggregate(SR_total ~ heat, ki_fish_sum, function(x) sd(x)/sqrt(length(x
 
 ##############################
 
+## Calculate the number of non-zero observations for each trophic group
+zeroes <- as.data.frame(colSums(ki_fish_sum[, c(20:27)] != 0))
+
+# Proportion of zeroes for groups with at least one zero observation: Corallivores = 9.2%, Detritivores = 8.0%, 
+# Generalist carnivores = 0.6%, Piscivores = 2.5%.
+
+
+##############################
+
 ## Fit models for reef fish biomass, abundance, and species richness
 
 
 ###############
 ### BIOMASS ###
 ###############
+
+## All models are fit with a Gamma distribution, using the 'log' link function.
+
+## As the Gamma distribution cannot take zero values, half of the minimum non-zero value is added to the zeroes for the 
+## corallivore, detritivore, generalist carnivore, and piscivore models.
+
 
 ## Create function to add half of the minimum non-zero value to zeroes
 gammadd <- function(x) {
@@ -140,6 +155,13 @@ summary(model9b)
 ### ABUNDANCE ###
 #################
 
+## All models are fit with a negative binomial distribution.
+
+## Both the corallivore and detritivore functional groups contain over 5% zeroes. Therefore, we fit zero-inflated negative
+## binomial models for both of these groups, and compared them to the resular negative binomial models using AIC to 
+## determine whether accounting for zero inflation improved model fit.
+
+
 ## All fish
 model1a <- glmmadmb(AB_total ~ heat * f.pressure + npp_max_z + time_of_day + (1|site) + (1|observer), 
                    data = ki_fish_sum, family = "nbinom")
@@ -147,16 +169,32 @@ plot(fitted(model1a), resid(model1a))
 summary(model1a)
 
 ## Corallivores
+# Regular model
 model2a <- glmmadmb(AB_coral ~ heat * f.pressure + npp_max_z + time_of_day + (1|site) + (1|observer), 
-                   data = ki_fish_sum, zeroInflation = TRUE, family = "nbinom")
+                    data = ki_fish_sum, family = "nbinom")
 plot(fitted(model2a), resid(model2a))
 summary(model2a)
+# Zero-inflated model
+model2az <- glmmadmb(AB_coral ~ heat * f.pressure + npp_max_z + time_of_day + (1|site) + (1|observer), 
+                   data = ki_fish_sum, zeroInflation = TRUE, family = "nbinom")
+plot(fitted(model2az), resid(model2az))
+summary(model2az)
+# Compare fit with AIC
+AIC(model2a, model2az) # The zero-inflated model provides a better fit for the corallivores.
 
 ## Detritivores
+# Regular model
 model3a <- glmmadmb(AB_det ~ heat * f.pressure + npp_max_z + time_of_day + (1|site) + (1|observer), 
-                   data = ki_fish_sum, zeroInflation = TRUE, family = "nbinom")
+                    data = ki_fish_sum, family = "nbinom")
 plot(fitted(model3a), resid(model3a))
 summary(model3a)
+# Zero-inflated model
+model3az <- glmmadmb(AB_det ~ heat * f.pressure + npp_max_z + time_of_day + (1|site) + (1|observer), 
+                   data = ki_fish_sum, zeroInflation = TRUE, family = "nbinom")
+plot(fitted(model3az), resid(model3az))
+summary(model3az)
+# Compare fit with AIC
+AIC(model3a, model3az) # The zero-inflated model provides a better fit for the detritivores.
 
 ## Generalist carnivores
 model4a <- glmmadmb(AB_gen ~ heat * f.pressure + npp_max_z + time_of_day + (1|site) + (1|observer), 
@@ -198,6 +236,9 @@ summary(model9a)
 ########################
 ### SPECIES RICHNESS ###
 ########################
+
+## The model is fit with a Poisson distribution, using the 'log' link function.
+
 
 ## All fish
 model1s <- glmer(SR_total ~ heat * f.pressure + npp_max_z + time_of_day + (1|site) + (1|observer), 
