@@ -1,5 +1,5 @@
 
-# Pulse heat stress events foreshadow long-term climate change impacts on coral reef fish communities
+# Direct and indirect effects of climate change-amplified pulse heat stress events  on coral reef fish communities
 
 # Authors: Jennifer M.T. Magel [1], Sean A. Dimoff [1], Julia K. Baum [1,2]
 # Institution: [1] Department of Biology, University of Victoria, Victoria, British Columbia, V8P 5C2, Canada
@@ -26,27 +26,22 @@ load("KI_fish_data_raw.Rdata")
 
 ## Additional data cleaning
 # Double number of small fish to account for smaller survey area (300m^2 compared to 600m^2 for large fish))
-ki_small <- ki_fish[ki_fish$length < 20, ]
-ki_large <- ki_fish[ki_fish$length >= 20, ]
+ki_small <- ki_full[ki_full$length < 20, ]
+ki_large <- ki_full[ki_full$length >= 20, ]
 ki_small$number <- ki_small$number*2
-ki_fish <- rbind(ki_small, ki_large)
-# Remove sharks and jacks (due to potential survey biases)
-ki_fish <- ki_fish[!grepl("Caranx", ki_fish$species), ] # Removes 29 observations
-ki_fish <- ki_fish[!grepl("Carangoides", ki_fish$species), ] # Removes 3 observations
-ki_fish <- ki_fish[!grepl("Scomberoides", ki_fish$species), ] # Removes 14 observations
-ki_fish <- ki_fish[!grepl("Carcharhinus", ki_fish$species), ] # Removes 1 observation
+ki_full <- rbind(ki_small, ki_large)
 # Calculate biomass
-ki_fish$biomass <- ki_fish$number * ki_fish$mass
+ki_full$biomass <- ki_full$number * ki_full$mass
 
 # Create a separate data frame for each functional group
-ki_coral <- ki_fish[ki_fish$trophic == "Corallivore", ]
-ki_det <- ki_fish[ki_fish$trophic == "Detritivore", ]
-ki_gen <- ki_fish[ki_fish$trophic == "Generalist carnivore", ]
-ki_herb <- ki_fish[ki_fish$trophic == "Herbivore", ]
-ki_inv <- ki_fish[ki_fish$trophic == "Invertivore", ]
-ki_omn <- ki_fish[ki_fish$trophic == "Omnivore", ]
-ki_pisc <- ki_fish[ki_fish$trophic == "Piscivore", ]
-ki_plank <- ki_fish[ki_fish$trophic == "Planktivore", ]
+ki_coral <- ki_full[ki_full$trophic == "Corallivore", ]
+ki_det <- ki_full[ki_full$trophic == "Detritivore", ]
+ki_gen <- ki_full[ki_full$trophic == "Generalist carnivore", ]
+ki_herb <- ki_full[ki_full$trophic == "Herbivore", ]
+ki_inv <- ki_full[ki_full$trophic == "Invertivore", ]
+ki_omn <- ki_full[ki_full$trophic == "Omnivore", ]
+ki_pisc <- ki_full[ki_full$trophic == "Piscivore", ]
+ki_plank <- ki_full[ki_full$trophic == "Planktivore", ]
 
 
 ##############################
@@ -61,11 +56,11 @@ ki_plank <- ki_fish[ki_fish$trophic == "Planktivore", ]
 # Note that summed values are divided by 300 to give biomass in units of g/m^2
 
 ## Total biomass
-ki_BM <- ki_fish %>% group_by(heat, year, ki.date, site, observer, f.pressure, npp_max, time_of_day) %>% 
+ki_BM <- ki_full %>% group_by(heat, year, ki.date, site, observer, fp.cont.z, npp.max.z, time.poly.z, lunar.sine.z) %>% 
   summarise(BM_total = sum(biomass)/300)
-# Note that f.pressure and npp_max both map to site, while time_of_day maps to the combination of ki.date and site; these
-# variables are included in the above calculation to ensure that they are retained in the final dataset, but are excluded
-# from subsequent calculations for the sake or simplicity
+# Note that fp.cont.z, and npp.max.z both map to site, while time.poly.z and lunar.sine.z map to the combination of ki.date 
+# and site; these variables are included in the above calculation to ensure that they are retained in the final dataset, 
+# but are excluded from subsequent calculations for the sake of simplicity
 
 ## Functional group biomass
 # Corallivores
@@ -91,7 +86,7 @@ ki_BM_plank <- ki_plank %>% group_by(heat, year, ki.date, site, observer) %>% su
 #################
 
 ## Total abundance
-ki_AB <- ki_fish %>% group_by(heat, year, ki.date, site, observer) %>% summarise(AB_total = sum(number))
+ki_AB <- ki_full %>% group_by(heat, year, ki.date, site, observer) %>% summarise(AB_total = sum(number))
 
 ## Functional group abundance
 # Corallivores
@@ -117,28 +112,28 @@ ki_AB_plank <- ki_plank %>% group_by(heat, year, ki.date, site, observer) %>% su
 ########################
 
 # Remove observations that were not identified to species level
-ki_fish_SR <- ki_fish
-ki_fish_SR <- ki_fish_SR[!grepl("Acanthurus sp", ki_fish_SR$species), ]
-ki_fish_SR <- ki_fish_SR[!grepl("Blenniidae sp", ki_fish_SR$species), ]
-ki_fish_SR <- ki_fish_SR[!grepl("Chlorurus sp.", ki_fish_SR$species), ]
-ki_fish_SR <- ki_fish_SR[!grepl("Cirripectes sp", ki_fish_SR$species), ]
-ki_fish_SR <- ki_fish_SR[!grepl("Epinephelus sp.", ki_fish_SR$species), ]
-ki_fish_SR <- ki_fish_SR[!grepl("Gymnothorax sp", ki_fish_SR$species), ]
-ki_fish_SR <- ki_fish_SR[!grepl("Halichoeres sp.", ki_fish_SR$species), ]
-ki_fish_SR <- ki_fish_SR[!grepl("Kyphosus sp", ki_fish_SR$species), ]
-ki_fish_SR <- ki_fish_SR[!grepl("Parapercis sp.", ki_fish_SR$species), ]
-ki_fish_SR <- ki_fish_SR[!grepl("Pervagor sp", ki_fish_SR$species), ]
-ki_fish_SR <- ki_fish_SR[!grepl("Plagiotremus sp.", ki_fish_SR$species), ]
-ki_fish_SR <- ki_fish_SR[!grepl("Pseudanthias sp", ki_fish_SR$species), ]
-ki_fish_SR <- ki_fish_SR[!grepl("Ptereleotris sp", ki_fish_SR$species), ]
-ki_fish_SR <- ki_fish_SR[!grepl("Pterocaesio sp", ki_fish_SR$species), ]
-ki_fish_SR <- ki_fish_SR[!grepl("Pterois sp.", ki_fish_SR$species), ]
-ki_fish_SR <- ki_fish_SR[!grepl("Scarus sp", ki_fish_SR$species), ]
-ki_fish_SR <- ki_fish_SR[!grepl("Synodus sp.", ki_fish_SR$species), ]
-ki_fish_SR <- ki_fish_SR[!grepl("Valenciennea sp.", ki_fish_SR$species), ]
+ki_full_SR <- ki_full
+ki_full_SR <- ki_full_SR[!grepl("Acanthurus sp", ki_full_SR$species), ]
+ki_full_SR <- ki_full_SR[!grepl("Blenniidae sp", ki_full_SR$species), ]
+ki_full_SR <- ki_full_SR[!grepl("Chlorurus sp.", ki_full_SR$species), ]
+ki_full_SR <- ki_full_SR[!grepl("Cirripectes sp", ki_full_SR$species), ]
+ki_full_SR <- ki_full_SR[!grepl("Epinephelus sp.", ki_full_SR$species), ]
+ki_full_SR <- ki_full_SR[!grepl("Gymnothorax sp", ki_full_SR$species), ]
+ki_full_SR <- ki_full_SR[!grepl("Halichoeres sp.", ki_full_SR$species), ]
+ki_full_SR <- ki_full_SR[!grepl("Kyphosus sp", ki_full_SR$species), ]
+ki_full_SR <- ki_full_SR[!grepl("Parapercis sp.", ki_full_SR$species), ]
+ki_full_SR <- ki_full_SR[!grepl("Pervagor sp", ki_full_SR$species), ]
+ki_full_SR <- ki_full_SR[!grepl("Plagiotremus sp.", ki_full_SR$species), ]
+ki_full_SR <- ki_full_SR[!grepl("Pseudanthias sp", ki_full_SR$species), ]
+ki_full_SR <- ki_full_SR[!grepl("Ptereleotris sp", ki_full_SR$species), ]
+ki_full_SR <- ki_full_SR[!grepl("Pterocaesio sp", ki_full_SR$species), ]
+ki_full_SR <- ki_full_SR[!grepl("Pterois sp.", ki_full_SR$species), ]
+ki_full_SR <- ki_full_SR[!grepl("Scarus sp", ki_full_SR$species), ]
+ki_full_SR <- ki_full_SR[!grepl("Synodus sp.", ki_full_SR$species), ]
+ki_full_SR <- ki_full_SR[!grepl("Valenciennea sp.", ki_full_SR$species), ]
 
 # Total species richness
-ki_SR <- ki_fish_SR %>% group_by(heat, year, ki.date, site, observer) %>% summarise(SR_total = n_distinct(species))
+ki_SR <- ki_full_SR %>% group_by(heat, year, ki.date, site, observer) %>% summarise(SR_total = n_distinct(species))
 
 
 ##############################
@@ -148,7 +143,7 @@ ki_SR <- ki_fish_SR %>% group_by(heat, year, ki.date, site, observer) %>% summar
 # Rename the ki_BM data frame
 ki_fish_sum <- ki_BM
 
-# Create a unique identifier to match ... by combining the site, date, and observer values for each ...
+# Create a unique identifier by combining the site, date, and observer values for each row
 ki_fish_sum$dso <- paste(ki_fish_sum$site, ki_fish_sum$ki.date, ki_fish_sum$observer, sep = "-")
 
 ki_BM_coral$dso <- paste(ki_BM_coral$site, ki_BM_coral$ki.date, ki_BM_coral$observer, sep = "-")
@@ -195,6 +190,9 @@ ki_fish_sum[is.na(ki_fish_sum)] <- 0
 
 # Check for NA values anywhere in the data frame
 any(is.na(ki_fish_sum))
+
+# Remove 'dso' from data frame
+ki_fish_sum$dso <- NULL
 
 
 ## Save and quit
