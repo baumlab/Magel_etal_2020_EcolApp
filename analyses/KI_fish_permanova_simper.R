@@ -7,7 +7,8 @@
 # Corresponding Author: Julia K. Baum, Email: baum@uvic.ca
 
 
-# Script to run PERMANOVA and simper analyses for reef fish biomass
+# Script to run PERMANOVA and simper analyses examining changes in reef fish community structure
+# Tests are run using site x species matrices created using measures of reef fish biomass
 
 
 ##############################
@@ -44,7 +45,7 @@ load("SS_plank_meta.Rdata")
 
 ##############################
 
-# Run PERMANOVAs and simper analyses for the overall fish community ('all fish') and each functional group
+# Run PERMANOVA and simper analyses for the overall fish community ('all fish') and each functional group
 
 
 ## All fish
