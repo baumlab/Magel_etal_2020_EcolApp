@@ -56,11 +56,11 @@ ki_plank <- ki_full[ki_full$trophic == "Planktivore", ]
 # Note that summed values are divided by 300 to give biomass in units of g/m^2
 
 ## Total biomass
-ki_BM <- ki_full %>% group_by(heat, year, ki.date, site, observer, fp.cont.z, npp.max.z, time.poly.z, lunar.sine.z) %>% 
+ki_BM <- ki_full %>% group_by(heat, year, ki.date, site, observer, f.pressure, fp.cont.z, npp.max.z, time.poly.z, lunar.sine.z) %>% 
   summarise(BM_total = sum(biomass)/300)
-# Note that fp.cont.z, and npp.max.z both map to site, while time.poly.z and lunar.sine.z map to the combination of ki.date 
-# and site; these variables are included in the above calculation to ensure that they are retained in the final dataset, 
-# but are excluded from subsequent calculations for the sake of simplicity
+# Note that f.pressure, fp.cont.z, and npp.max.z both map to site, while time.poly.z and lunar.sine.z map to the combination
+# of ki.date and site; these variables are included in the above calculation to ensure that they are retained in the final
+# dataset, but are excluded from subsequent calculations for the sake of simplicity
 
 ## Functional group biomass
 # Corallivores
@@ -108,7 +108,7 @@ ki_AB_plank <- ki_plank %>% group_by(heat, year, ki.date, site, observer) %>% su
 
 
 ########################
-### species RICHNESS ###
+### SPECIES RICHNESS ###
 ########################
 
 # Remove observations that were not identified to species level
