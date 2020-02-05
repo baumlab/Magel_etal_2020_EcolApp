@@ -1,5 +1,7 @@
 ****
 
+[![DOI](https://zenodo.org/badge/201107205.svg)](https://zenodo.org/badge/latestdoi/201107205)
+
 Data and R code accompanying:
 
 **Direct and indirect effects of climate change-amplified pulse heat stress events on coral reef fish communities**
