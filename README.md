@@ -30,7 +30,9 @@ In the **[data](data/)** folder, [KI_fish_data_raw.Rdata](data/KI_fish_data_raw.
 * ```npp.max``` = Maximum local primary productivity at each site (mg C m^-2 day^-1)
 * ```survey_time``` = Start time for the first transect in the survey
 * ```time.poly``` = Survey time converted into a continuous variable, to be modelled as a polynomial
-* ```lunar.day``` = Lunar day (calculated from ki.date using the 'lunar' function)
+* ```lunar.day``` = Lunar day (calculated from ki.date using the 'lunar' package)
 * ```lunar.sine``` = Sine of lunar day
 
 Note that variables ending in '.z' are the standardized versions of the continuous predictor variables.
+
+[KI_fish_data_sum.Rdata](data/KI_fish_data_sum.Rdata) contains data on the mean site-level biomass (BM), abundance (AB), and species richness (SR) of the reef fish community as a whole ('total'), and for each individual trophic group (corallivores = 'coral', detritivores = 'det', generalist carnivores = 'gen', herbivores = 'herb', invertivores = 'inv', omnivores = 'omn', piscivores = 'pisc', planktivores = 'plank').
